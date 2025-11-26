@@ -41,17 +41,17 @@ def move_to(state, zone):
             return state
     return False
 
-def take_bricks(state, brick_type, color, quantity, bag_name):
-    if brick_type in state.stock and color in state.stock['brick_type']:
+def take_bricks(state, brick_type, color, quantity, sub_bag, brick_bag):
+    if brick_type in state.stock and color in state.stock[brick_type]:
         if state.stock[brick_type][color] > quantity:
             state.stock[brick_type][color] -= quantity
-            state.bags[bag_name][brick_type] += quantity
+            state.bags[sub_bag][brick_bag][brick_type] = int(state.bags[sub_bag][brick_bag].get(brick_type) or 0) + quantity
             return state
     return False
 
 def pack_bag(state, sub_bag, main_bag):
     if sub_bag in state.ready:
-        state.bags[main_bag][sub_bag] = state['bags'][sub_bag]
+        state.bags[main_bag][sub_bag] = state.bags[sub_bag]
         return state
     return False
 
@@ -64,14 +64,14 @@ ZONES = ['roof_zone', 'wall_zone', 'trunk_zone', 'branch_zone', 'ground_zone', '
 ## house methods
 def prepare_roof(state, color):
     move_to(state, 'roof_zone')
-    take_bricks(state, 'roof_brick', color, 1, 'roof_bag')
+    take_bricks(state, 'roof_brick', color, 1, 'house_bag', 'roof_bag')
     mark_ready(state, 'roof_bag')
 
 hop.declare_methods('prepare_roof', prepare_roof)
 
 def prepare_wall(state, color):
     move_to(state, 'wall_zone')
-    take_bricks(state, 'wall_brick', color, 1, 'walls_bag')
+    take_bricks(state, 'wall_brick', color, 1, 'house_bag', 'walls_bag')
     mark_ready(state, 'walls_bag')
 
 hop.declare_methods('prepare_wall', prepare_wall)
@@ -79,8 +79,8 @@ hop.declare_methods('prepare_wall', prepare_wall)
 def prepare_house(state, roof_color, wall_color):
     prepare_roof(state, roof_color)
     prepare_wall(state, wall_color)
-    pack_bag(state, 'roof_bag' 'house_bag')
-    pack_bag(state, 'walls_bag' 'house_bag')
+    pack_bag(state, 'roof_bag', 'house_bag')
+    pack_bag(state, 'walls_bag', 'house_bag')
 
 hop.declare_methods('prepare_house', prepare_house)
 ## end of house methods
@@ -88,14 +88,14 @@ hop.declare_methods('prepare_house', prepare_house)
 ## tree methods
 def prepare_trunk(state, color):
     move_to(state, 'trunk_zone')
-    take_bricks(state, 'trunk_brick', color, 1, 'trunk_bag')
+    take_bricks(state, 'trunk_brick', color, 1, 'tree_bag', 'trunk_bag')
     mark_ready(state, 'trunk_bag')
 
 hop.declare_methods('prepare_trunk', prepare_trunk)
 
 def prepare_branch(state, color):
     move_to(state, 'branch_zone')
-    take_bricks(state, 'branches_brick', color, 1, 'branches_bag')
+    take_bricks(state, 'branches_brick', color, 1, 'tree_bag', 'branches_bag')
     mark_ready(state, 'branches_bag')
 
 hop.declare_methods('prepare_branch', prepare_branch)
@@ -112,7 +112,7 @@ hop.declare_methods('prepare_tree', prepare_tree)
 ## ground methods
 def prepare_ground(state, color):
     move_to(state, 'ground_zone')
-    take_bricks(state, 'ground_brick', color, 1, 'ground_bag')
+    take_bricks(state, 'ground_brick', color, 1, 'ground_bag', 'ground_bag')
     mark_ready(state, 'ground_bag')
 
 hop.declare_methods('prepare_ground', prepare_ground)
@@ -121,14 +121,14 @@ hop.declare_methods('prepare_ground', prepare_ground)
 ## car bag
 def prepare_chasis(state, color):
     move_to(state, 'chassis_zone')
-    take_bricks(state, 'chassis_brick', color, 1, 'chassis_bag')
+    take_bricks(state, 'chassis_brick', color, 1, 'car_bag', 'chassis_bag')
     mark_ready(state, 'chassis_bag')
 
 hop.declare_methods('prepare_chasis', prepare_chasis)
 
 def prepare_body(state, color):
     move_to(state, 'body_zone')
-    take_bricks(state, 'body_brick', color, 1, 'body_bag')
+    take_bricks(state, 'body_brick', color, 1, 'car_bag', 'body_bag')
     mark_ready(state, 'body_bag')
 
 hop.declare_methods('prepare_body', prepare_body)
@@ -144,3 +144,29 @@ hop.declare_methods('prepare_car', prepare_car)
 
 
 
+def prepare_order(state, order):
+    # order = {'house': ('red', 'black'),
+    #          'tree': ('brown', False),  # False = no leaves
+    #          'ground': 'blue',
+    #          'car': ('black', 'red')}
+    # Return tasks to prepare all components # and pack them in main_bag
+    prepare_house(state, order['house'][0], order['house'][1])
+    prepare_tree(state, order['tree'][0], order['tree'][1])
+    prepare_ground(state, order['ground'])
+    prepare_car(state, order['car'][0], order['car'][1])
+    pass
+
+hop.declare_methods('prepare_order', prepare_order)
+
+if __name__ == "__main__":
+    st = state
+    order = {
+        'house': ('red', 'black'),
+        'tree': ('brown', False),  # False = no leaves
+        'ground': 'blue',
+        'car': ('black', 'red')
+    }
+
+    #prepare_order(st, order)
+    plan = hop.plan(st, [('prepare_order', order)], hop.get_operators(),hop.get_methods(),verbose=1)
+    print(f"\nGenerated plan with {len(plan)} actions")
