@@ -16,7 +16,7 @@ state.stock = {
 }
 
 state.bags = {
-    #'main_bag': {},
+    'main_bag': {},
     'house_bag': {
         'roof_bag': {},
         'walls_bag': {}
@@ -63,82 +63,137 @@ ZONES = ['roof_zone', 'wall_zone', 'trunk_zone', 'branch_zone', 'ground_zone', '
 
 ## house methods
 def prepare_roof(state, color):
-    move_to(state, 'roof_zone')
+    """move_to(state, 'roof_zone')
     take_bricks(state, 'roof_brick', color, 1, 'house_bag', 'roof_bag')
-    mark_ready(state, 'roof_bag')
+    mark_ready(state, 'roof_bag')"""
+    return [
+        ('move_to', 'roof_zone'),
+        ('take_bricks', 'roof_brick', color, 1, 'house_bag', 'roof_bag'),
+        ('mark_ready', 'roof_bag')
+    ]
 
 hop.declare_methods('prepare_roof', prepare_roof)
 
 def prepare_wall(state, color):
-    move_to(state, 'wall_zone')
+    """move_to(state, 'wall_zone')
     take_bricks(state, 'wall_brick', color, 1, 'house_bag', 'walls_bag')
-    mark_ready(state, 'walls_bag')
+    mark_ready(state, 'walls_bag')"""
+    return [
+        ('move_to', 'wall_zone'),
+        ('take_bricks', 'wall_brick', color, 1, 'house_bag', 'walls_bag'),
+        ('mark_ready', 'walls_bag')
+    ]
 
 hop.declare_methods('prepare_wall', prepare_wall)
 
 def prepare_house(state, roof_color, wall_color):
-    prepare_roof(state, roof_color)
+    """prepare_roof(state, roof_color)
     prepare_wall(state, wall_color)
     pack_bag(state, 'roof_bag', 'house_bag')
-    pack_bag(state, 'walls_bag', 'house_bag')
+    pack_bag(state, 'walls_bag', 'house_bag')"""
+    return [
+        ('prepare_roof', roof_color),
+        ('prepare_wall', wall_color),
+        ('pack_bag', 'roof_bag', 'house_bag'),
+        ('pack_bag', 'walls_bag', 'house_bag'),
+    ]
+    
 
 hop.declare_methods('prepare_house', prepare_house)
 ## end of house methods
 
 ## tree methods
 def prepare_trunk(state, color):
-    move_to(state, 'trunk_zone')
+    """move_to(state, 'trunk_zone')
     take_bricks(state, 'trunk_brick', color, 1, 'tree_bag', 'trunk_bag')
-    mark_ready(state, 'trunk_bag')
+    mark_ready(state, 'trunk_bag')"""
+    return [
+        ('move_to', 'trunk_zone'),
+        ('take_bricks', 'trunk_brick', color, 1, 'tree_bag', 'trunk_bag'),
+        ('mark_ready', 'trunk_bag')
+    ]
 
 hop.declare_methods('prepare_trunk', prepare_trunk)
 
 def prepare_branch(state, color):
-    move_to(state, 'branch_zone')
+    """move_to(state, 'branch_zone')
     take_bricks(state, 'branches_brick', color, 1, 'tree_bag', 'branches_bag')
-    mark_ready(state, 'branches_bag')
+    mark_ready(state, 'branches_bag')"""
+    return [
+        ('move_to', 'branches_zone'),
+        ('take_bricks', 'branches_brick', color, 1, 'tree_bag', 'branches_bag'),
+        ('mark_ready', 'branches_bag')
+    ]
 
 hop.declare_methods('prepare_branch', prepare_branch)
 
 def prepare_tree(state, trunk_color, branch_color):
-    prepare_trunk(state, trunk_color)
+    """prepare_trunk(state, trunk_color)
     prepare_branch(state, branch_color)
     pack_bag(state, 'trunk_bag' 'tree_bag')
-    pack_bag(state, 'branches_bag' 'tree_bag')
+    pack_bag(state, 'branches_bag' 'tree_bag')"""
+    return [
+        ('prepare_trunk', trunk_color),
+        ('prepare_branch', branch_color),
+        ('pack_bag', 'trunk_bag', 'tree_bag'),
+        ('pack_bag', 'branches_bag', 'tree_bag'),
+    ]
 
 hop.declare_methods('prepare_tree', prepare_tree)
 ## end of tree methods
 
 ## ground methods
 def prepare_ground(state, color):
-    move_to(state, 'ground_zone')
+    """move_to(state, 'ground_zone')
     take_bricks(state, 'ground_brick', color, 1, 'ground_bag', 'ground_bag')
-    mark_ready(state, 'ground_bag')
+    mark_ready(state, 'ground_bag')"""
+    return [
+        ('move_to', 'ground_zone'),
+        ('take_bricks', 'ground_brick', color, 1, 'ground_bag', 'ground_bag'),
+        ('mark_ready', 'ground_bag'),
+        ('pack_bag', 'ground_bag', 'ground_bag')
+    ]
 
 hop.declare_methods('prepare_ground', prepare_ground)
 ## end of ground methods
 
 ## car bag
 def prepare_chasis(state, color):
-    move_to(state, 'chassis_zone')
+    """move_to(state, 'chassis_zone')
     take_bricks(state, 'chassis_brick', color, 1, 'car_bag', 'chassis_bag')
-    mark_ready(state, 'chassis_bag')
+    mark_ready(state, 'chassis_bag')"""
+    return [
+        ('move_to', 'chassis_zone'),
+        ('take_bricks', 'chassis_brick', color, 1, 'car_bag', 'chassis_bag'),
+        ('mark_ready', 'chassis_bag')
+    ]
 
 hop.declare_methods('prepare_chasis', prepare_chasis)
 
 def prepare_body(state, color):
-    move_to(state, 'body_zone')
+    """move_to(state, 'body_zone')
     take_bricks(state, 'body_brick', color, 1, 'car_bag', 'body_bag')
-    mark_ready(state, 'body_bag')
+    mark_ready(state, 'body_bag')"""
+    return [
+        ('move_to', 'body_zone'),
+        ('take_bricks', 'body_brick', color, 1, 'car_bag', 'body_bag'),
+        ('mark_ready', 'body_bag')
+    ]
 
 hop.declare_methods('prepare_body', prepare_body)
 
 def prepare_car(state, chasis_color, body_color):
-    prepare_chasis(state, chasis_color)
+    """prepare_chasis(state, chasis_color)
     prepare_body(state, body_color)
     pack_bag(state, 'chassis_bag' 'car_bag')
-    pack_bag(state, 'body_bag' 'car_bag')
-
+    pack_bag(state, 'body_bag' 'car_bag')"""
+    return [
+        ('prepare_chasis', chasis_color),
+        ('prepare_body', body_color),
+        ('pack_bag', 'chassis_bag', 'car_bag'),
+        ('pack_bag', 'body_bag', 'car_bag'),
+    ]
+    
 hop.declare_methods('prepare_car', prepare_car)
 ## end of car bag
 
