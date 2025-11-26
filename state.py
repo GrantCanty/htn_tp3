@@ -15,7 +15,7 @@ state.stock = {
     'body_brick': {'red': 63, 'blue': 82, 'yellow': 67}
 }
 
-state.bags = {
+"""state.bags = {
     'main_bag': {},
     'house_bag': {
         'roof_bag': {},
@@ -30,6 +30,20 @@ state.bags = {
         'chassis_bag': {},
         'body_bag': {}
     },
+}"""
+
+state.bags = {
+    'main_bag': {},
+    'house_bag': {},
+    'tree_bag': {},
+    'ground_bag': {},
+    'car_bag': {},
+    'roof_bag': {},
+    'walls_bag': {},
+    'trunk_bag': {},
+    'branches_bag': {},
+    'chassis_bag': {},
+    'body_bag': {}
 }
 
 state.ready = set()
@@ -41,11 +55,19 @@ def move_to(state, zone):
             return state
     return False
 
-def take_bricks(state, brick_type, color, quantity, sub_bag, brick_bag):
+'''def take_bricks(state, brick_type, color, quantity, sub_bag, brick_bag):
     if brick_type in state.stock and color in state.stock[brick_type]:
         if state.stock[brick_type][color] > quantity:
             state.stock[brick_type][color] -= quantity
             state.bags[sub_bag][brick_bag][brick_type] = int(state.bags[sub_bag][brick_bag].get(brick_type) or 0) + quantity
+            return state
+    return False'''
+
+def take_bricks(state, brick_type, color, quantity, bag_name): # Remove sub_bag parameter
+    if brick_type in state.stock and color in state.stock[brick_type]:
+        if state.stock[brick_type][color] >= quantity:
+            state.stock[brick_type][color] -= quantity
+            state.bags[bag_name][brick_type] = int(state.bags[bag_name].get(brick_type) or 0) + quantity
             return state
     return False
 
@@ -68,7 +90,8 @@ def prepare_roof(state, color):
     mark_ready(state, 'roof_bag')"""
     return [
         ('move_to', 'roof_zone'),
-        ('take_bricks', 'roof_brick', color, 1, 'house_bag', 'roof_bag'),
+        #('take_bricks', 'roof_brick', color, 1, 'house_bag', 'roof_bag'),
+        ('take_bricks', 'roof_brick', color, 1, 'roof_bag'),
         ('mark_ready', 'roof_bag')
     ]
 
@@ -80,7 +103,8 @@ def prepare_wall(state, color):
     mark_ready(state, 'walls_bag')"""
     return [
         ('move_to', 'wall_zone'),
-        ('take_bricks', 'wall_brick', color, 1, 'house_bag', 'walls_bag'),
+        #('take_bricks', 'wall_brick', color, 1, 'house_bag', 'walls_bag'),
+        ('take_bricks', 'wall_brick', color, 1, 'walls_bag'),
         ('mark_ready', 'walls_bag')
     ]
 
@@ -96,6 +120,7 @@ def prepare_house(state, roof_color, wall_color):
         ('prepare_wall', wall_color),
         ('pack_bag', 'roof_bag', 'house_bag'),
         ('pack_bag', 'walls_bag', 'house_bag'),
+        ('mark_ready', 'house_bag')
     ]
     
 
@@ -109,7 +134,8 @@ def prepare_trunk(state, color):
     mark_ready(state, 'trunk_bag')"""
     return [
         ('move_to', 'trunk_zone'),
-        ('take_bricks', 'trunk_brick', color, 1, 'tree_bag', 'trunk_bag'),
+        #('take_bricks', 'trunk_brick', color, 1, 'tree_bag', 'trunk_bag'),
+        ('take_bricks', 'trunk_brick', color, 1, 'trunk_bag'),
         ('mark_ready', 'trunk_bag')
     ]
 
@@ -121,7 +147,8 @@ def prepare_branch(state, color):
     mark_ready(state, 'branches_bag')"""
     return [
         ('move_to', 'branches_zone'),
-        ('take_bricks', 'branches_brick', color, 1, 'tree_bag', 'branches_bag'),
+        #('take_bricks', 'branches_brick', color, 1, 'tree_bag', 'branches_bag'),
+        ('take_bricks', 'branches_brick', color, 1, 'branches_bag'),
         ('mark_ready', 'branches_bag')
     ]
 
@@ -137,6 +164,7 @@ def prepare_tree(state, trunk_color, branch_color):
         ('prepare_branch', branch_color),
         ('pack_bag', 'trunk_bag', 'tree_bag'),
         ('pack_bag', 'branches_bag', 'tree_bag'),
+        ('mark_ready', 'tree_bag')
     ]
 
 hop.declare_methods('prepare_tree', prepare_tree)
@@ -149,9 +177,11 @@ def prepare_ground(state, color):
     mark_ready(state, 'ground_bag')"""
     return [
         ('move_to', 'ground_zone'),
-        ('take_bricks', 'ground_brick', color, 1, 'ground_bag', 'ground_bag'),
+        #('take_bricks', 'ground_brick', color, 1, 'ground_bag', 'ground_bag'),
+        ('take_bricks', 'ground_brick', color, 1, 'ground_bag'),
         ('mark_ready', 'ground_bag'),
-        ('pack_bag', 'ground_bag', 'ground_bag')
+        #('pack_bag', 'ground_bag', 'ground_bag')
+        ('mark_ready', 'ground_bag')
     ]
 
 hop.declare_methods('prepare_ground', prepare_ground)
@@ -164,7 +194,8 @@ def prepare_chasis(state, color):
     mark_ready(state, 'chassis_bag')"""
     return [
         ('move_to', 'chassis_zone'),
-        ('take_bricks', 'chassis_brick', color, 1, 'car_bag', 'chassis_bag'),
+        #('take_bricks', 'chassis_brick', color, 1, 'car_bag', 'chassis_bag'),
+        ('take_bricks', 'chassis_brick', color, 1, 'chassis_bag'),
         ('mark_ready', 'chassis_bag')
     ]
 
@@ -176,7 +207,8 @@ def prepare_body(state, color):
     mark_ready(state, 'body_bag')"""
     return [
         ('move_to', 'body_zone'),
-        ('take_bricks', 'body_brick', color, 1, 'car_bag', 'body_bag'),
+        #('take_bricks', 'body_brick', color, 1, 'car_bag', 'body_bag'),
+        ('take_bricks', 'body_brick', color, 1, 'body_bag'),
         ('mark_ready', 'body_bag')
     ]
 
@@ -192,6 +224,7 @@ def prepare_car(state, chasis_color, body_color):
         ('prepare_body', body_color),
         ('pack_bag', 'chassis_bag', 'car_bag'),
         ('pack_bag', 'body_bag', 'car_bag'),
+        ('mark_ready', 'car_bag')
     ]
     
 hop.declare_methods('prepare_car', prepare_car)
@@ -205,11 +238,25 @@ def prepare_order(state, order):
     #          'ground': 'blue',
     #          'car': ('black', 'red')}
     # Return tasks to prepare all components # and pack them in main_bag
-    prepare_house(state, order['house'][0], order['house'][1])
+    """prepare_house(state, order['house'][0], order['house'][1])
     prepare_tree(state, order['tree'][0], order['tree'][1])
     prepare_ground(state, order['ground'])
-    prepare_car(state, order['car'][0], order['car'][1])
-    pass
+    prepare_car(state, order['car'][0], order['car'][1])"""
+    return [
+        ('prepare_house', order['house'][0], order['house'][1]),
+        ('prepare_tree', order['tree'][0], order['tree'][0]), # Assuming trunk color == branch color ('brown')
+        ('prepare_ground', order['ground']),
+        ('prepare_car', order['car'][0], order['car'][1]),
+        
+        # Final packing tasks: pack all components into the 'main_bag'
+        # Since 'main_bag' isn't in state.bags, we need to add it to the state first.
+        # Assuming we update the state to include 'main_bag':
+        ('pack_bag', 'house_bag', 'main_bag'), 
+        ('pack_bag', 'tree_bag', 'main_bag'), 
+        ('pack_bag', 'ground_bag', 'main_bag'), # The ground bag is a component on its own level
+        ('pack_bag', 'car_bag', 'main_bag'),
+        ('mark_ready', 'main_bag')
+    ]
 
 hop.declare_methods('prepare_order', prepare_order)
 
@@ -224,4 +271,4 @@ if __name__ == "__main__":
 
     #prepare_order(st, order)
     plan = hop.plan(st, [('prepare_order', order)], hop.get_operators(),hop.get_methods(),verbose=1)
-    print(f"\nGenerated plan with {len(plan)} actions")
+    #print(f"\nGenerated plan with {len(plan)} actions")
