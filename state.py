@@ -9,31 +9,19 @@ state.stock = {
     'roof_brick': {'red': 40, 'blue': 35, 'green': 55},
     'wall_brick': {'black': 30, 'blue': 63, 'red': 18, 'yellow': 54},
     'trunk_brick': {'brown': 42},
-    'branches_brick': {'brown': 18},
-    'ground': {'blue': 48},
+    'branches_brick': {'brown': 65},
+    'ground': {'blue': 48, 'green': 102},
     'chassis': {'black': 83},
-    'body': {'red': 63}
+    'body': {'red': 63, 'blue': 82, 'yellow': 67}
 }
 
-"""state.bags = {
-    'main_bag': {
-        'house_bag': {
-            'roof_bag': {},
-            'walls_bag': {}
-        },
-        'tree_bag': {
-            'trunk_bag': {},
-            'branches_bag': {},
-        },
-        'ground_bag': {},
-        'car_bag': {
-            'chassis_bag': {},
-            'body_bag': {},
-        }
-    },
-}"""
-
-state.bags = {}
+state.bags = {
+    'main_bag': [],
+    'house_bag': [],
+    'tree_bag': [],
+    'ground_bag': [],
+    'car_bag': [],
+}
 
 state.ready = set()
 
